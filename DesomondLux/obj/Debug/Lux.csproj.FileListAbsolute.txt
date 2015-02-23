@@ -1,0 +1,17 @@
+c:\users\desomond\documents\visual studio 2013\Projects\Lux\Lux\bin\Debug\Lux.exe.config
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\Lux.exe
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\Lux.pdb
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\clipper_library.dll
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\isCCd.dll
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\LeagueSharp.Common.dll
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\LeagueSharp.dll
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\LibGit2Sharp.dll
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\SharpDX.Direct3D9.dll
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\SharpDX.dll
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\SharpDX.Toolkit.dll
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\SharpDX.Toolkit.Graphics.dll
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\LeagueSharp.xml
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\SharpDX.Toolkit.xml
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Debug\SharpDX.Toolkit.Graphics.xml
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\obj\Debug\Lux.exe
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\obj\Debug\Lux.pdb
