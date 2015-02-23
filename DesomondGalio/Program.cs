@@ -37,7 +37,7 @@ namespace DesomondGalio
         {
             Menu = new Menu("Galio", "Galio", true);
             var TargetSelectorMenu = new Menu("Target Selector", "Target Selector");
-            SimpleTs.AddToMenu(TargetSelectorMenu);
+            TargetSelector.AddToMenu(TargetSelectorMenu);
             Menu.AddSubMenu(TargetSelectorMenu);
             
 
@@ -127,11 +127,11 @@ namespace DesomondGalio
             var AllMinions = MinionManager.GetMinions(Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health);
             foreach (var minion in AllMinions)
             {
-                if (qFarm && Q.IsReady() && Player.Distance(minion) <= Q.Range)
+                if (qFarm && Q.IsReady())
                 {
                     Q.Cast(minion);
                 }
-                if (eFarm && E.IsReady() && Player.Distance(minion) <= E.Range)
+                if (eFarm && E.IsReady())
                 {
                     E.Cast(minion);
                 }
@@ -143,7 +143,7 @@ namespace DesomondGalio
             var HarassQ = Menu.Item("HarassQ").GetValue<bool>();
             var HarassW = Menu.Item("HarassW").GetValue<bool>();
             var HarassE = Menu.Item("HarassE").GetValue<bool>();
-            var t = SimpleTs.GetTarget(940, SimpleTs.DamageType.Magical);
+            var t = TargetSelector.GetTarget(940, TargetSelector.DamageType.Magical);
            
             if (HarassQ && Q.IsReady())
             {
@@ -190,7 +190,7 @@ namespace DesomondGalio
             var useW = Menu.Item("UseW").GetValue<bool>();
             var useE = Menu.Item("UseE").GetValue<bool>();
             var numOfEnemies = Menu.Item("MinEnemys").GetValue<Slider>().Value;
-            var t = SimpleTs.GetTarget(940, SimpleTs.DamageType.Magical);
+            var t = TargetSelector.GetTarget(940, TargetSelector.DamageType.Magical);
   
             if (!Player.HasBuff("GalioIdolOfDurand"))
             {
@@ -231,7 +231,7 @@ namespace DesomondGalio
 
             if (R.IsReady() && useR)
             {
-                var t2 = SimpleTs.GetTarget(300, SimpleTs.DamageType.Magical);
+                var t2 = TargetSelector.GetTarget(300, TargetSelector.DamageType.Magical);
                 if(GetEnemys(t2) >= numOfEnemies)
                 {
                     Orbwalker.SetMovement(false);
