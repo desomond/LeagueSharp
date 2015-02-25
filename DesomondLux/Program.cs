@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using System.Collections.Generic;
+using Color = System.Drawing.Color;
 
 namespace Lux
 {
@@ -40,7 +42,7 @@ namespace Lux
             Menu = new Menu("Lux", "Lux", true);
 
             var TargetSelectorMenu = new Menu("Target Selector", "Target Selector");
-            SimpleTs.AddToMenu(TargetSelectorMenu);
+            TargetSelector.AddToMenu(TargetSelectorMenu);
             Menu.AddSubMenu(TargetSelectorMenu);
 
 
@@ -73,6 +75,12 @@ namespace Lux
             Menu.SubMenu("Misc").AddItem(new MenuItem("RKS", "R Kill Steal").SetValue(true));
             Menu.SubMenu("Misc").AddItem(new MenuItem("Ignite", "Use Ignite").SetValue(false));
             Menu.SubMenu("Misc").AddItem(new MenuItem("QandE", "Use Q E combo whenever possible").SetValue(false));
+           
+            Menu.AddSubMenu(new Menu("Draw", "Draw"));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawKill", "Draw Killibility").SetValue(true));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawQ", "Draw Q").SetValue(new Circle(true, Color.Green)));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawE", "Draw E").SetValue(new Circle(true, Color.Green)));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawR", "Draw R").SetValue(new Circle(true, Color.Green)));
 
             Menu.AddToMainMenu();
 
@@ -109,28 +117,28 @@ namespace Lux
             {
                 if (qHarass && Q.IsReady())
                 {
-                    var t = SimpleTs.GetTarget(1175, SimpleTs.DamageType.Magical);
+                    var t = TargetSelector.GetTarget(1175, TargetSelector.DamageType.Magical);
                     if (t.IsValidTarget())
                     {
                         var predQ = Q.GetPrediction(t);
 
                         if (predQ.Hitchance == HitChance.Medium || predQ.Hitchance == HitChance.High)
                         {
-                                Q.Cast(predQ.CastPosition);
+                            Q.Cast(predQ.CastPosition);
                         }
                     }
                 }
                 if (eHarass && E.IsReady())
                 {
-                    var t = SimpleTs.GetTarget(1100, SimpleTs.DamageType.Magical);
+                    var t = TargetSelector.GetTarget(1100, TargetSelector.DamageType.Magical);
                     if (t.IsValidTarget())
-                    { 
+                    {
                         var predE = E.GetPrediction(t);
 
                         if (predE.Hitchance == HitChance.Medium || predE.Hitchance == HitChance.High)
                         {
-                                E.Cast(predE.CastPosition);
-                                E.Cast();
+                            E.Cast(predE.CastPosition);
+                            E.Cast();
                         }
                     }
                 }
@@ -161,23 +169,13 @@ namespace Lux
             if (comboActive)
             {
 
-                var t = SimpleTs.GetTarget(1100, SimpleTs.DamageType.Magical);
-                var t2 = SimpleTs.GetTarget(750, SimpleTs.DamageType.Magical);
-                var Qdmg = DamageLib.getDmg(t, DamageLib.SpellType.Q);
-                var Edmg = DamageLib.getDmg(t, DamageLib.SpellType.E);
-                var Rdmg = DamageLib.getDmg(t, DamageLib.SpellType.R);
-                if (t.HasBuff("luxilluminatingfraulein"))
-                {
-                    Rdmg = DamageLib.getDmg(t, DamageLib.SpellType.R) + DamageLib.CalcMagicDmg((10 + (8 * Player.Level) + (0.20 * ObjectManager.Player.FlatMagicDamageMod)), t);
-                }
-  
+                var t = TargetSelector.GetTarget(1100, TargetSelector.DamageType.Magical);
+                var t2 = TargetSelector.GetTarget(750, TargetSelector.DamageType.Magical);
 
-                
-                var DFGdmg = DamageLib.getDmg(t, DamageLib.SpellType.DFG);
 
                 if (t.IsValidTarget() || t2.IsValidTarget())
                 {
-                    if ((t.Health < Qdmg)&&Q.IsReady())
+                    if (Q.IsReady())
                     {
                         var predQ = Q.GetPrediction(t);
                         if ((predQ.Hitchance == HitChance.Medium || predQ.Hitchance == HitChance.High))
@@ -185,7 +183,7 @@ namespace Lux
                             Q.Cast(predQ.CastPosition);
                         }
                     }
-                    else if ((t.Health < Qdmg + Edmg) && Q.IsReady()&&E.IsReady())
+                    else if (Q.IsReady() && E.IsReady())
                     {
                         var predQ = Q.GetPrediction(t);
                         var predE = E.GetPrediction(t);
@@ -196,7 +194,7 @@ namespace Lux
                             E.Cast();
                         }
                     }
-                    else if ((t.Health < Qdmg + Edmg + Rdmg) && Q.IsReady() && E.IsReady()&&R.IsReady())
+                    else if (Q.IsReady() && E.IsReady() && R.IsReady())
                     {
                         var predQ = Q.GetPrediction(t);
                         var predE = E.GetPrediction(t);
@@ -209,101 +207,110 @@ namespace Lux
                             E.Cast();
                         }
                     }
-                    else if ((t2.Health < (Qdmg + Edmg + Rdmg) + ((Qdmg + Edmg + Rdmg) * .15) + DFGdmg) && Q.IsReady() && E.IsReady() && R.IsReady() && LeagueSharp.Common.Items.CanUseItem("3128"))
-                    {
-                        var predQ = Q.GetPrediction(t2);
-                        var predE = E.GetPrediction(t2);
-                        var predR = R.GetPrediction(t2);
-                        if ((predQ.Hitchance == HitChance.Medium || predQ.Hitchance == HitChance.High) && (predE.Hitchance == HitChance.Medium || predE.Hitchance == HitChance.High))
-                        {
-                            LeagueSharp.Common.Items.UseItem("3128");
-                            Q.Cast(predQ.CastPosition);
-                            E.Cast(predE.CastPosition);
-                            R.Cast(predR.CastPosition);
-                            E.Cast();
-                        }
-                    }
-                }
 
 
-                if (Q.IsReady())
-                {
-                    var t3 = SimpleTs.GetTarget(1175, SimpleTs.DamageType.Magical);
-                    if (t3.IsValidTarget())
+                    if (Q.IsReady())
                     {
-                        var predQ = Q.GetPrediction(t3);
-                        if (predQ.Hitchance == HitChance.Medium || predQ.Hitchance == HitChance.High)
+                        var t3 = TargetSelector.GetTarget(1175, TargetSelector.DamageType.Magical);
+                        if (t3.IsValidTarget())
                         {
-                            Q.Cast(predQ.CastPosition);
-                            Q.Cast();
-                        }
-                    }
-                }
-    
-                if (E.IsReady())
-                {
-                    var t3 = SimpleTs.GetTarget(1100, SimpleTs.DamageType.Magical);
-                    if (t3.IsValidTarget())
-                    {
-                        var predE = E.GetPrediction(t3);
-                        if (predE.Hitchance == HitChance.Medium || predE.Hitchance == HitChance.High)
-                        {
-                            E.Cast(predE.CastPosition);
-                            E.Cast();
-                        }
-                    }
-                }
-            }
-            if (Menu.Item("RKS").GetValue<bool>() && R.IsReady())
-            {
-                var t = SimpleTs.GetTarget(3340, SimpleTs.DamageType.Magical);
-                if (t.IsValidTarget())
-                {
-                    var dmg = DamageLib.getDmg(t, DamageLib.SpellType.R);
-                   
-                    if (t.HasBuff("luxilluminatingfraulein"))
-                    {
-                        dmg = DamageLib.getDmg(t, DamageLib.SpellType.R) + DamageLib.CalcMagicDmg((10 + (8*Player.Level) +(0.20 * ObjectManager.Player.FlatMagicDamageMod)), t);
-                    }
-
-                    if (t.Health < dmg)
-                    {
-                        var pred = R.GetPrediction(t);
-
-                        if (pred.Hitchance == HitChance.Medium || pred.Hitchance == HitChance.High)
-                        {
-                                R.Cast(pred.CastPosition);
-                        }
-                    }
-                 }
-            }
-            if (Menu.Item("QandE").GetValue<bool>() && Q.IsReady() && E.IsReady())
-            {
-                var t = SimpleTs.GetTarget(1150, SimpleTs.DamageType.Magical);
-                if (t.IsValidTarget())
-                {
-                    var predQ = Q.GetPrediction(t);
-                    var predE = E.GetPrediction(t);
-                        if ((predQ.Hitchance == HitChance.Medium || predQ.Hitchance == HitChance.High)&&(predE.Hitchance == HitChance.Medium || predE.Hitchance == HitChance.High))
-                        {
+                            var predQ = Q.GetPrediction(t3);
+                            if (predQ.Hitchance == HitChance.Medium || predQ.Hitchance == HitChance.High)
+                            {
                                 Q.Cast(predQ.CastPosition);
+                                Q.Cast();
+                            }
+                        }
+                    }
+
+                    if (E.IsReady())
+                    {
+                        var t3 = TargetSelector.GetTarget(1100, TargetSelector.DamageType.Magical);
+                        if (t3.IsValidTarget())
+                        {
+                            var predE = E.GetPrediction(t3);
+                            if (predE.Hitchance == HitChance.Medium || predE.Hitchance == HitChance.High)
+                            {
                                 E.Cast(predE.CastPosition);
                                 E.Cast();
+                            }
                         }
+                    }
                 }
-            }
-            if (Menu.Item("Ignite").GetValue<bool>())
-            {
-                var t = SimpleTs.GetTarget(600, SimpleTs.DamageType.Physical);
-                var igniteDmg = DamageLib.getDmg(t, DamageLib.SpellType.IGNITE);
-                if (t != null && SumIgnite != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(SumIgnite) == SpellState.Ready)
+                if (Menu.Item("RKS").GetValue<bool>() && R.IsReady())
                 {
-                    if (igniteDmg > t.Health)
+                    var tar = TargetSelector.GetTarget(3340, TargetSelector.DamageType.Magical);
+                    if (tar.IsValidTarget())
                     {
-                        ObjectManager.Player.SummonerSpellbook.CastSpell(SumIgnite, t);
+                        var dmg = Player.GetSpellDamage(tar, SpellSlot.R);
+
+                        if (tar.HasBuff("luxilluminatingfraulein"))
+                        {
+                            dmg =(float)Player.GetSpellDamage(tar, SpellSlot.R) + Damage.CalcDamage(Player, t, Damage.DamageType.Magical, (10 + (8 * Player.Level) + (0.20 * ObjectManager.Player.FlatMagicDamageMod)));
+                        } 
+                       
+                        if (tar.Health < dmg)
+                        {
+                            var pred = R.GetPrediction(t);
+
+                            if (pred.Hitchance == HitChance.Medium || pred.Hitchance == HitChance.High)
+                            {
+                                R.Cast(pred.CastPosition);
+                            }
+                        }
+                    }
+                }
+                if (Menu.Item("QandE").GetValue<bool>() && Q.IsReady() && E.IsReady())
+                {
+                    var tar = TargetSelector.GetTarget(1150, TargetSelector.DamageType.Magical);
+                    if (tar.IsValidTarget())
+                    {
+                        var predQ = Q.GetPrediction(t);
+                        var predE = E.GetPrediction(t);
+                        if ((predQ.Hitchance == HitChance.Medium || predQ.Hitchance == HitChance.High) && (predE.Hitchance == HitChance.Medium || predE.Hitchance == HitChance.High))
+                        {
+                            Q.Cast(predQ.CastPosition);
+                            E.Cast(predE.CastPosition);
+                            E.Cast();
+                        }
                     }
                 }
             }
         }
+        private static void OnDraw(EventArgs args)
+        {
+            if (Menu.Item("DrawKill").GetValue<bool>())
+            {
+
+                foreach (var tar in ObjectManager.Get<Obj_AI_Hero>().Where(unit => unit.IsEnemy && unit.IsVisible && !unit.IsDead))
+                {
+                    var wts = Drawing.WorldToScreen(tar.Position);
+
+                    var passiveDmg = Damage.CalcDamage(Player, tar, Damage.DamageType.Magical, (10 + (8 * Player.Level) + (0.20 * ObjectManager.Player.FlatMagicDamageMod)));
+
+                    var DMG = (float)Player.GetSpellDamage(tar, SpellSlot.Q) + (float)Player.GetSpellDamage(tar, SpellSlot.E) + (float)Player.GetSpellDamage(tar, SpellSlot.R) + passiveDmg;
+
+                    if (DMG > tar.Health)
+                    {
+                        Drawing.DrawText(wts[0] - 20, wts[1] + 20, Color.Red, "Killable!");
+                    }
+                }
+            }
+
+            if (Menu.Item("DrawQ").GetValue<bool>())
+            {
+                Render.Circle.DrawCircle(Player.Position, Q.Range, Menu.SubMenu("Drawing").Item("drawQRange").GetValue<Circle>().Color);
+            }
+            if (Menu.Item("DrawE").GetValue<bool>())
+            {
+                Render.Circle.DrawCircle(Player.Position, E.Range, Menu.SubMenu("Drawing").Item("drawERange").GetValue<Circle>().Color);
+            }
+            if (Menu.Item("DrawR").GetValue<bool>()&& Player.Level>=6)
+            {
+                Render.Circle.DrawCircle(ObjectManager.Player.Position, R.Range, Menu.SubMenu("Drawing").Item("drawRRange").GetValue<Circle>().Color);
+            }
+
+        }
     }
+
 }

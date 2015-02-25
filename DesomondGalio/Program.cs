@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using System.Collections.Generic;
+using Color = System.Drawing.Color;
 
 namespace DesomondGalio
 {
@@ -23,7 +25,7 @@ namespace DesomondGalio
         public static Spell W;
         public static Spell E;
         public static Spell R;
-
+        public static SpellSlot SumIgnite = ObjectManager.Player.GetSpellSlot("SummonerDot");
         public static void Main(string[] args)
         {
             Game.OnGameStart += Game_Start;
@@ -47,6 +49,7 @@ namespace DesomondGalio
 
             //------------Combo
             Menu.AddSubMenu(new Menu("Combo", "Combo"));
+            Menu.SubMenu("Combo").AddItem(new MenuItem("UseI", "Use Ignite").SetValue(true));
             Menu.SubMenu("Combo").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
             Menu.SubMenu("Combo").AddItem(new MenuItem("UseW", "Use W").SetValue(true));
             Menu.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
@@ -72,6 +75,12 @@ namespace DesomondGalio
             var mana = Menu.AddSubMenu(new Menu("Mana Limiter", "Mana Limiter"));
             mana.AddItem(new MenuItem("comboMana", "Combo Mana %").SetValue(new Slider(1, 100, 0)));
             mana.AddItem(new MenuItem("harassMana", "Harass Mana %").SetValue(new Slider(30, 100, 0)));
+
+            Menu.AddSubMenu(new Menu("Draw", "Draw"));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawKill", "Draw Killibility").SetValue(true));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawQ", "Draw Q").SetValue(new Circle(true, Color.Green)));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawE", "Draw E").SetValue(new Circle(true, Color.Green)));
+            Menu.SubMenu("Draw").AddItem(new MenuItem("DrawR", "Draw R").SetValue(new Circle(true, Color.Green)));
 
  
             Menu.AddToMainMenu();
@@ -153,11 +162,11 @@ namespace DesomondGalio
                     if (HarassW && W.IsReady())
                     {
                         W.Cast(ObjectManager.Player);
-                        Q.Cast(t);   
+                        Q.Cast(t, true);   
                     }
                     else
                     {
-                        Q.Cast(t);
+                        Q.Cast(t, true);
                     }
                 }
             }
@@ -170,12 +179,12 @@ namespace DesomondGalio
                     {
 
                         W.Cast(ObjectManager.Player);
-                        E.Cast(t);
+                        E.Cast(t, true);
 
                     }
                     else
                     {
-                        E.Cast(t);
+                        E.Cast(t, true);
                     }
                 }
             }
@@ -203,12 +212,12 @@ namespace DesomondGalio
                 {
                     if (useW && W.IsReady() && comboMana < (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana))
                     {
-                            W.Cast(ObjectManager.Player);
-                            Q.Cast(t);
+                            W.Cast(ObjectManager.Player, true);
+                            Q.Cast(t, true);
                     }
                     else
                     {
-                        Q.Cast(t);
+                        Q.Cast(t, true);
                     }
                 }
             }
@@ -219,12 +228,12 @@ namespace DesomondGalio
                 {
                     if (useW && W.IsReady() && comboMana < (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana))
                     {
-                        W.Cast(ObjectManager.Player);
-                        E.Cast(t);
+                        W.Cast(ObjectManager.Player, true);
+                        E.Cast(t, true);
                     }
                     else
                     {
-                        E.Cast(t);
+                        E.Cast(t, true);
                     }
                 }
             }
@@ -238,11 +247,21 @@ namespace DesomondGalio
                     R.Cast(t2, false, true);
                     if (useW)
                     {
-                        W.Cast(ObjectManager.Player);
+                        W.Cast(ObjectManager.Player, true);
                     }
                 }
                
             }
+
+            if (Menu.Item("UseI").GetValue<bool>() && SumIgnite != SpellSlot.Unknown && Player.Spellbook.CanUseSpell(SumIgnite) == SpellState.Ready)
+            {
+                var IgniteDmg = Damage.GetSummonerSpellDamage(Player, t, Damage.SummonerSpell.Ignite);
+                if (IgniteDmg > t.Health)
+                {
+                    Player.Spellbook.CastSpell(SumIgnite, t);
+                }
+            }
+
         }
      //-----------Stolen
         private static int GetEnemys(Obj_AI_Hero target)
@@ -261,9 +280,19 @@ namespace DesomondGalio
      //-----------Stolen
         private static void OnDraw(EventArgs args)
         {
-             Utility.DrawCircle(ObjectManager.Player.Position, Q.Range, System.Drawing.Color.White, 1, 100);
-             Utility.DrawCircle(ObjectManager.Player.Position, E.Range, System.Drawing.Color.White, 1, 100);
-             Utility.DrawCircle(ObjectManager.Player.Position, R.Range, System.Drawing.Color.White, 1, 100);
+
+            if (Menu.Item("DrawQ").GetValue<bool>())
+            {
+                Render.Circle.DrawCircle(Player.Position, Q.Range, Menu.SubMenu("Drawing").Item("drawQRange").GetValue<Circle>().Color);
+            }
+            if (Menu.Item("DrawE").GetValue<bool>())
+            {
+                Render.Circle.DrawCircle(Player.Position, E.Range, Menu.SubMenu("Drawing").Item("drawERange").GetValue<Circle>().Color);
+            }
+            if (Menu.Item("DrawR").GetValue<bool>() && Player.Level >= 6)
+            {
+                Render.Circle.DrawCircle(ObjectManager.Player.Position, R.Range, Menu.SubMenu("Drawing").Item("drawRRange").GetValue<Circle>().Color);
+            }
         }
     }
 }

@@ -16,3 +16,4 @@ C:\Users\desomond\Documents\Visual Studio 2013\Projects\DesomondGalio\DesomondGa
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\DesomondGalio\DesomondGalio\bin\Release\SharpDX.Toolkit.xml
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\DesomondGalio\DesomondGalio\obj\Debug\DesomondGalio.exe
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\DesomondGalio\DesomondGalio\obj\Debug\DesomondGalio.pdb
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\DesomondGalio\DesomondGalio\obj\Debug\DesomondGalio.csprojResolveAssemblyReference.cache
