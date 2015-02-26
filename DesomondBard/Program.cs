@@ -22,6 +22,10 @@ namespace Bard
 
         public static Spell Q;
         public static Spell R;
+
+        public static Spell stunQ { get; private set; }
+
+
         public static void Main(string[] args)
         {
             Game.OnGameStart += Game_Start;
@@ -46,6 +50,7 @@ namespace Bard
             //------------Combo
             Menu.AddSubMenu(new Menu("Combo", "Combo"));
             Menu.SubMenu("Combo").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
+            Menu.SubMenu("Combo").AddItem(new MenuItem("alwaysStun", "Use Q only when it will stun")).SetValue(true);
             Menu.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R")).SetValue(true);
             Menu.SubMenu("Combo").AddItem(new MenuItem("MinEnemys", "Min enemys for R")).SetValue(new Slider(3, 5, 1));
             Menu.SubMenu("Combo").AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
@@ -65,8 +70,9 @@ namespace Bard
             var mana = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             mana.AddItem(new MenuItem("comboMana", "Combo Mana %").SetValue(new Slider(1, 100, 0)));
             mana.AddItem(new MenuItem("harassMana", "Harass Mana %").SetValue(new Slider(30, 100, 0)));
-            mana.AddItem(new MenuItem("forceQ", "Force Q just for slow").SetValue(new KeyBind("A".ToCharArray()[0], KeyBindType.Press)));
-            mana.AddItem(new MenuItem("forceR", "Force R just for slow").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
+            mana.AddItem(new MenuItem("forceQ", "Force Q(slow not gaurenteed)").SetValue(new KeyBind("A".ToCharArray()[0], KeyBindType.Press)));
+            mana.AddItem(new MenuItem("forceR", "Force R").SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
+            mana.AddItem(new MenuItem("interruptR", "interrupt dangerous spells with Ult").SetValue(true));
 
             Menu.AddSubMenu(new Menu("Draw", "Draw"));
             Menu.SubMenu("Draw").AddItem(new MenuItem("DrawQ", "Draw Q").SetValue(new Circle(true, Color.Green)));
@@ -81,26 +87,31 @@ namespace Bard
 
             Q = new Spell(SpellSlot.Q, 940f);
             R = new Spell(SpellSlot.R, 2500f);
-
-            Q.SetSkillshot(0.5f, 120, 1300, false, SkillshotType.SkillshotLine);
+            stunQ = new Spell(SpellSlot.Q, Q.Range);
+           
+            Q.SetSkillshot(0.5f, 120, 1300, true, SkillshotType.SkillshotLine);
             R.SetSkillshot(0.5f, 300, 0, false, SkillshotType.SkillshotCircle);
-
+            stunQ.SetSkillshot(Q.Delay, 90, Q.Speed, false, SkillshotType.SkillshotLine);
 
 
             Game.PrintChat("DesomondBard Loaded.");
             Game.OnGameUpdate += Game_OnUpdate;
             Drawing.OnDraw += OnDraw;
+            Interrupter2.OnInterruptableTarget += BardOnInterruptableSpell;
+
         }
 
         public static void Game_OnUpdate(EventArgs args)
         {
-            List<Vector2> pos = new List<Vector2>();
+            Obj_AI_Hero t = null;
 
             var ClearActive = Menu.Item("ClearActive").GetValue<KeyBind>().Active;
             var HarassActive = Menu.Item("HarassActive").GetValue<KeyBind>().Active;
             var ComboActive = Menu.Item("ComboActive").GetValue<KeyBind>().Active;
             var harassMana = Menu.Item("harassMana").GetValue<Slider>().Value;
-
+           
+            var forceQ = Menu.Item("forceQ").GetValue<KeyBind>().Active;
+            var forceUlt = Menu.Item("forceUlt").GetValue<KeyBind>().Active;
 
             if (ClearActive)
             {
@@ -108,11 +119,29 @@ namespace Bard
             }
             if (HarassActive && harassMana < (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana))
             {
-                Harass();
+                Harass(t);
             }
             if (ComboActive)
             {
-                Combo();
+                Combo(t);
+            }
+
+            if (Q.IsReady() && forceQ)
+            {
+                 t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+                 if (t.IsValidTarget())
+                 {
+                     R.Cast(t);
+                 }
+            }
+
+            if (R.IsReady() && forceUlt)
+            {
+                t = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
+                if (t.IsValidTarget())
+                {
+                    R.Cast(t);
+                }
             }
         }
 
@@ -131,16 +160,15 @@ namespace Bard
             }
         }
 
-        public static void Harass()
+        public static void Harass(Obj_AI_Hero t)
         {
             var HarassQ = Menu.Item("HarassQ").GetValue<bool>();
             var HarassW = Menu.Item("HarassW").GetValue<bool>();
             var HarassE = Menu.Item("HarassE").GetValue<bool>();
-            var t = TargetSelector.GetTarget(940, TargetSelector.DamageType.Magical);
+            t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
             if (HarassQ && Q.IsReady())
             {
-
                 if (t.IsValidTarget())
                 {
                    Q.Cast(t, true);
@@ -148,22 +176,22 @@ namespace Bard
             }
         }
 
-        public static void Combo()
+        public static void Combo(Obj_AI_Hero t)
         {
-
             var comboMana = Menu.Item("comboMana").GetValue<Slider>().Value;
             var useR = Menu.Item("UseR").GetValue<bool>();
             var useQ = Menu.Item("UseQ").GetValue<bool>();
             var forceQ = Menu.Item("forceQ").GetValue<bool>();
             var forceR = Menu.Item("forceQ").GetValue<bool>();
+            var alwaysStun = Menu.Item("alwaysStun").GetValue<bool>();
             var numOfEnemies = Menu.Item("MinEnemys").GetValue<Slider>().Value;
-            var t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
             if (useQ && Q.IsReady())
             {
                 if (t.IsValidTarget())
                 {
-                    if (forceQ && comboMana < (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana))
+                    if ((forceQ && comboMana < (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana))||!alwaysStun)
                     {
                         Q.Cast(t);
                     }
@@ -181,7 +209,6 @@ namespace Bard
                 {
                     R.Cast(t2, false, true);
                 }
-
             }
         }
 
@@ -199,6 +226,14 @@ namespace Bard
             return Enemys;
         }
 
+        private static void BardOnInterruptableSpell(Obj_AI_Hero unit, Interrupter2.InterruptableTargetEventArgs args)
+         {
+             if (Menu.Item("interruptR").GetValue<bool>())
+             {
+                R.Cast(unit,false, true);
+             }
+         }
+
         private static void OnDraw(EventArgs args)
         {
 
@@ -213,26 +248,16 @@ namespace Bard
         }
 
         private static void castStunQ(Obj_AI_Hero target)
-        {
+        {   
+            var prediction = stunQ.GetPrediction(target);
+            var prediction2 = Q.GetPrediction(target);
 
-            var prediction = Q.GetPrediction(target);
+            var castPos = prediction.CastPosition;
+            var endOfQ  =  prediction2.CastPosition;
 
-            if (prediction.Hitchance >= HitChance.High)
-            {   
-                // Save our cast postion
-                var castPos = prediction.CastPosition;
-                // Check if there is something to pass through when casting Q
-                Q.Collision = true;
-                prediction = Q.GetPrediction(target);
-                // Reset the collision value
-                Q.Collision = false;
-                
-                var endOfQ = target.Position.Extend(target.Position, Q.Range);
-
-                if ((prediction.CollisionObjects.Count > 0)||endOfQ.IsWall())
-                {
-                    Q.Cast(castPos);
-                }
+            if ((prediction.CollisionObjects.Count > 0) || endOfQ.IsWall())
+            {
+                Q.Cast(castPos);
             }
         }
     }
