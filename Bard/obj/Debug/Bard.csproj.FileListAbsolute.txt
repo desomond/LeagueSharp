@@ -1,0 +1,14 @@
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\bin\Debug\Bard.exe.config
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\bin\Debug\Bard.exe
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\bin\Debug\Bard.pdb
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\bin\Debug\Igniter.dll
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\bin\Debug\isCCd.dll
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\bin\Debug\LeagueSharp.Common.dll
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\bin\Debug\LeagueSharp.dll
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\bin\Debug\SharpDX.dll
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\bin\Debug\SharpDX.Direct3D9.dll
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\bin\Debug\clipper_library.dll
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\bin\Debug\LeagueSharp.xml
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\obj\Debug\Bard.csprojResolveAssemblyReference.cache
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\obj\Debug\Bard.exe
+c:\users\desomond\documents\visual studio 2013\Projects\Bard\Bard\obj\Debug\Bard.pdb
