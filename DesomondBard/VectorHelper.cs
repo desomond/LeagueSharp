@@ -47,4 +47,5 @@ namespace Bard
 
             return null;
         }
+    }
 }
