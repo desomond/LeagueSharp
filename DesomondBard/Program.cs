@@ -89,13 +89,15 @@ namespace Bard
             R = new Spell(SpellSlot.R, 2500f);
             stunQ = new Spell(SpellSlot.Q, Q.Range);
            
-            Q.SetSkillshot(0.5f, 120, 1300, true, SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.5f, 120, 1300, false, SkillshotType.SkillshotLine);
             R.SetSkillshot(0.5f, 300, 0, false, SkillshotType.SkillshotCircle);
-            stunQ.SetSkillshot(Q.Delay, 90, Q.Speed, false, SkillshotType.SkillshotLine);
+            stunQ.SetSkillshot(Q.Delay, 90, Q.Speed, true, SkillshotType.SkillshotLine);
 
 
             Game.PrintChat("DesomondBard Loaded.");
+            Game.PrintChat("SPAM");
             Game.OnGameUpdate += Game_OnUpdate;
+            Game.PrintChat("DesomondBard Loaded.");
             Drawing.OnDraw += OnDraw;
             Interrupter2.OnInterruptableTarget += BardOnInterruptableSpell;
 
@@ -103,16 +105,16 @@ namespace Bard
 
         public static void Game_OnUpdate(EventArgs args)
         {
+          
             Obj_AI_Hero t = null;
-
             var ClearActive = Menu.Item("ClearActive").GetValue<KeyBind>().Active;
             var HarassActive = Menu.Item("HarassActive").GetValue<KeyBind>().Active;
             var ComboActive = Menu.Item("ComboActive").GetValue<KeyBind>().Active;
             var harassMana = Menu.Item("harassMana").GetValue<Slider>().Value;
-           
-            var forceQ = Menu.Item("forceQ").GetValue<KeyBind>().Active;
-            var forceUlt = Menu.Item("forceUlt").GetValue<KeyBind>().Active;
 
+            var forceQ = Menu.Item("forceQ").GetValue<KeyBind>().Active;
+           
+            var forceR = Menu.Item("forceR").GetValue<KeyBind>().Active;
             if (ClearActive)
             {
                 Farm();
@@ -131,18 +133,18 @@ namespace Bard
                  t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
                  if (t.IsValidTarget())
                  {
-                     R.Cast(t);
+                     Q.Cast(t);
                  }
             }
 
-            if (R.IsReady() && forceUlt)
-            {
-                t = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
-                if (t.IsValidTarget())
-                {
-                    R.Cast(t);
-                }
-            }
+           if (R.IsReady() && forceR)
+           {
+               t = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
+               if (t.IsValidTarget())
+               {
+                   R.Cast(t);
+               }
+           }
         }
 
         public static void Farm()
@@ -178,30 +180,28 @@ namespace Bard
 
         public static void Combo(Obj_AI_Hero t)
         {
+
+            
             var comboMana = Menu.Item("comboMana").GetValue<Slider>().Value;
             var useR = Menu.Item("UseR").GetValue<bool>();
             var useQ = Menu.Item("UseQ").GetValue<bool>();
-            var forceQ = Menu.Item("forceQ").GetValue<bool>();
-            var forceR = Menu.Item("forceQ").GetValue<bool>();
+
             var alwaysStun = Menu.Item("alwaysStun").GetValue<bool>();
             var numOfEnemies = Menu.Item("MinEnemys").GetValue<Slider>().Value;
             t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
-            if (useQ && Q.IsReady())
+            
+            if (useQ /*&& Q.IsReady()*/)
             {
                 if (t.IsValidTarget())
                 {
-                    if ((forceQ && comboMana < (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana))||!alwaysStun)
-                    {
-                        Q.Cast(t);
-                    }
-                    else
+                    if (alwaysStun)
                     {
                         castStunQ(t);
                     }
                 }
             }
-
+            
             if (R.IsReady() && useR)
             {
                 var t2 = TargetSelector.GetTarget(2500, TargetSelector.DamageType.Magical);
@@ -250,14 +250,16 @@ namespace Bard
         private static void castStunQ(Obj_AI_Hero target)
         {   
             var prediction = stunQ.GetPrediction(target);
-            var prediction2 = Q.GetPrediction(target);
 
-            var castPos = prediction.CastPosition;
-            var endOfQ  =  prediction2.CastPosition;
+            var direction = (Player.ServerPosition - prediction.UnitPosition).Normalized();
+            var endOfQ = (Q.Range)*direction;
+            var distanceFromTargetToWall = endOfQ - (Player.ServerPosition - prediction.UnitPosition);
 
-            if ((prediction.CollisionObjects.Count > 0) || endOfQ.IsWall())
+            var checkPoint = prediction.UnitPosition + distanceFromTargetToWall;
+
+            if ((prediction.CollisionObjects.Count > 0) || prediction.UnitPosition.GetFirstWallPoint(checkPoint).HasValue)
             {
-                Q.Cast(castPos);
+                Q.Cast(prediction.UnitPosition);
             }
         }
     }
