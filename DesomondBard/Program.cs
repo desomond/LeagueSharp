@@ -191,7 +191,7 @@ namespace Bard
             t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
             
-            if (useQ /*&& Q.IsReady()*/)
+            if (useQ && Q.IsReady())
             {
                 if (t.IsValidTarget())
                 {
