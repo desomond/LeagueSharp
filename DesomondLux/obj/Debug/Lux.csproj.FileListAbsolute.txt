@@ -30,3 +30,4 @@ C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Release\Shar
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Release\LeagueSharp.xml
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Release\SharpDX.Toolkit.xml
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\bin\Release\SharpDX.Toolkit.Graphics.xml
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\Lux\Lux\obj\Debug\Lux.csprojResolveAssemblyReference.cache

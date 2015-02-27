@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -55,8 +55,6 @@ namespace Lux
             Menu.SubMenu("Combo").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
             Menu.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
             Menu.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R").SetValue(true));
-            Menu.SubMenu("Combo").AddItem(new MenuItem("DFG", "Use DFG").SetValue(true));
-
             Menu.SubMenu("Combo").AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
             //-------------end Combo
 
@@ -99,7 +97,7 @@ namespace Lux
 
             Game.PrintChat("Lux Loaded.");
 
-            //Drawing.OnDraw += Drawing_OnDraw;
+            Drawing.OnDraw += OnDraw;
             Game.OnGameUpdate += Game_OnUpdate;
         }
 
@@ -112,6 +110,7 @@ namespace Lux
             var harassActive = Menu.Item("HarassActive").GetValue<KeyBind>().Active;
             var clearActive = Menu.Item("ClearActive").GetValue<KeyBind>().Active;
             var comboActive = Menu.Item("ComboActive").GetValue<KeyBind>().Active;
+            var useIgnite = Menu.Item("Ignite").GetValue<KeyBind>().Active;
 
             if (harassActive)
             {
@@ -273,6 +272,18 @@ namespace Lux
                             E.Cast(predE.CastPosition);
                             E.Cast();
                         }
+                    }
+                }
+            }
+            if (useIgnite)
+            {
+                var t = TargetSelector.GetTarget(600, TargetSelector.DamageType.Physical);
+                var igniteDmg = ObjectManager.Player.GetSummonerSpellDamage(t, Damage.SummonerSpell.Ignite);
+                if (t != null && SumIgnite != SpellSlot.Unknown && Player.Spellbook.CanUseSpell(SumIgnite) == SpellState.Ready)
+                {
+                    if (igniteDmg > t.Health)
+                    {
+                        Player.Spellbook.CastSpell(SumIgnite, t);
                     }
                 }
             }
