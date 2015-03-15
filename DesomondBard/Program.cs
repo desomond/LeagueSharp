@@ -51,7 +51,6 @@ namespace Bard
             Menu.AddSubMenu(new Menu("Combo", "Combo"));
             Menu.SubMenu("Combo").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
             Menu.SubMenu("Combo").AddItem(new MenuItem("alwaysStun", "Use Q only when it will stun")).SetValue(true);
-            Menu.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R")).SetValue(true);
             Menu.SubMenu("Combo").AddItem(new MenuItem("MinEnemys", "Min enemys for R")).SetValue(new Slider(3, 5, 1));
             Menu.SubMenu("Combo").AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
             //-------------end Combo
@@ -85,13 +84,13 @@ namespace Bard
 
             Player = ObjectManager.Player;
 
-            Q = new Spell(SpellSlot.Q, 940f);
+            Q = new Spell(SpellSlot.Q, 1100f);
             R = new Spell(SpellSlot.R, 2500f);
             stunQ = new Spell(SpellSlot.Q, Q.Range);
            
-            Q.SetSkillshot(0.5f, 120, 1300, false, SkillshotType.SkillshotLine);
-            R.SetSkillshot(0.5f, 300, 0, false, SkillshotType.SkillshotCircle);
-            stunQ.SetSkillshot(Q.Delay, 90, Q.Speed, true, SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.25f, 108, 1100, false, SkillshotType.SkillshotLine);
+            R.SetSkillshot(0.5f, 325, 1800, false, SkillshotType.SkillshotCircle);
+            stunQ.SetSkillshot(Q.Delay, Q.Width, Q.Speed, true, SkillshotType.SkillshotLine);
 
 
             Game.PrintChat("DesomondBard Loaded.");
@@ -201,15 +200,6 @@ namespace Bard
                     }
                 }
             }
-            
-            if (R.IsReady() && useR)
-            {
-                var t2 = TargetSelector.GetTarget(2500, TargetSelector.DamageType.Magical);
-                if (GetEnemys(t2) >= numOfEnemies)
-                {
-                    R.Cast(t2, false, true);
-                }
-            }
         }
 
         private static int GetEnemys(Obj_AI_Hero target)
@@ -257,7 +247,7 @@ namespace Bard
 
             var checkPoint = prediction.UnitPosition + distanceFromTargetToWall;
 
-            if ((prediction.CollisionObjects.Count > 0) || prediction.UnitPosition.GetFirstWallPoint(checkPoint).HasValue)
+            if ((prediction.CollisionObjects.Count == 1 ) || prediction.UnitPosition.GetFirstWallPoint(checkPoint).HasValue)
             {
                 Q.Cast(prediction.UnitPosition);
             }
