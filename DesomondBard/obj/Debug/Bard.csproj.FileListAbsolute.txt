@@ -9,6 +9,5 @@ C:\Users\desomond\Documents\Visual Studio 2013\Projects\Bard\Bard\bin\Release\Sh
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\Bard\Bard\bin\Release\SharpDX.Direct3D9.dll
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\Bard\Bard\bin\Release\clipper_library.dll
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\Bard\Bard\bin\Release\LeagueSharp.xml
-C:\Users\desomond\Documents\Visual Studio 2013\Projects\Bard\Bard\obj\Debug\Bard.csprojResolveAssemblyReference.cache
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\Bard\Bard\obj\Debug\Bard.exe
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\Bard\Bard\obj\Debug\Bard.pdb

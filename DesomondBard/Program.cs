@@ -90,7 +90,7 @@ namespace Bard
             stunQ = new Spell(SpellSlot.Q, Q.Range);
            
             Q.SetSkillshot(0.25f, 60, 1600, false, SkillshotType.SkillshotLine);
-            R.SetSkillshot(0.5f, 325, 1800, false, SkillshotType.SkillshotCircle);
+            R.SetSkillshot(0.5f, 325, 2100, false, SkillshotType.SkillshotCircle);
             stunQ.SetSkillshot(Q.Delay, Q.Width, Q.Speed, true, SkillshotType.SkillshotLine);
 
 
