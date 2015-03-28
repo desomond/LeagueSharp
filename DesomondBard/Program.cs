@@ -259,11 +259,10 @@ namespace Bard
 
             var direction = (Player.ServerPosition - prediction.UnitPosition).Normalized();
             var endOfQ = (Q.Range)*direction;
-            var distanceFromTargetToWall = endOfQ - (Player.ServerPosition - prediction.UnitPosition);
 
-            var checkPoint = prediction.UnitPosition + distanceFromTargetToWall;
+            var checkPoint = prediction.UnitPosition.Extend(Player.ServerPosition, -Q.Range/4);
 
-            if ((prediction.CollisionObjects.Count == 1) || prediction.UnitPosition.GetFirstWallPoint(checkPoint).HasValue)
+            if ((prediction.CollisionObjects.Count == 1) || (prediction.UnitPosition.GetFirstWallPoint(checkPoint).HasValue && (prediction.CollisionObjects.Count == 0)))
             {
                 Q.Cast(prediction.UnitPosition);
             }
