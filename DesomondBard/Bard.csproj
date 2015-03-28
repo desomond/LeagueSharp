@@ -36,19 +36,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Igniter">
-      <HintPath>C:\Users\desomond\Desktop\LeagueSharp\\System\Igniter.dll</HintPath>
+      <HintPath>C:\Users\desomond\Desktop\LeagueSharp\System\Igniter.dll</HintPath>
     </Reference>
     <Reference Include="isCCd">
-      <HintPath>C:\Users\desomond\Desktop\LeagueSharp\\System\isCCd.dll</HintPath>
+      <HintPath>C:\Users\desomond\Desktop\LeagueSharp\System\isCCd.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp">
-      <HintPath>C:\Users\desomond\Desktop\LeagueSharp\\System\LeagueSharp.dll</HintPath>
+      <HintPath>C:\Users\desomond\Desktop\LeagueSharp\System\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>C:\Users\desomond\Desktop\LeagueSharp\\System\LeagueSharp.Common.dll</HintPath>
+      <HintPath>C:\Users\desomond\Desktop\LeagueSharp\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>C:\Users\desomond\Desktop\LeagueSharp\\System\SharpDX.dll</HintPath>
+      <HintPath>C:\Users\desomond\Desktop\LeagueSharp\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

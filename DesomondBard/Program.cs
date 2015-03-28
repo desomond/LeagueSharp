@@ -28,7 +28,7 @@ namespace Bard
 
         public static void Main(string[] args)
         {
-            Game.OnGameStart += Game_Start;
+            Game.OnStart += Game_Start;
             if (Game.Mode == GameMode.Running)
             {
                 Game_Start(new EventArgs());
@@ -50,6 +50,7 @@ namespace Bard
             //------------Combo
             Menu.AddSubMenu(new Menu("Combo", "Combo"));
             Menu.SubMenu("Combo").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
+            Menu.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R").SetValue(true));
             Menu.SubMenu("Combo").AddItem(new MenuItem("alwaysStun", "Use Q only when it will stun")).SetValue(true);
             Menu.SubMenu("Combo").AddItem(new MenuItem("MinEnemys", "Min enemys for R")).SetValue(new Slider(3, 5, 1));
             Menu.SubMenu("Combo").AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
@@ -84,19 +85,17 @@ namespace Bard
 
             Player = ObjectManager.Player;
 
-            Q = new Spell(SpellSlot.Q, 1100f);
+            Q = new Spell(SpellSlot.Q, 950f);
             R = new Spell(SpellSlot.R, 2500f);
             stunQ = new Spell(SpellSlot.Q, Q.Range);
            
-            Q.SetSkillshot(0.25f, 108, 1100, false, SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.25f, 60, 1600, false, SkillshotType.SkillshotLine);
             R.SetSkillshot(0.5f, 325, 1800, false, SkillshotType.SkillshotCircle);
             stunQ.SetSkillshot(Q.Delay, Q.Width, Q.Speed, true, SkillshotType.SkillshotLine);
 
 
-            Game.PrintChat("DesomondBard Loaded.");
-            Game.PrintChat("SPAM");
-            Game.OnGameUpdate += Game_OnUpdate;
-            Game.PrintChat("DesomondBard Loaded.");
+            Game.PrintChat("DesomondBard Loaded. fast");
+            Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += OnDraw;
             Interrupter2.OnInterruptableTarget += BardOnInterruptableSpell;
 
@@ -110,10 +109,12 @@ namespace Bard
             var HarassActive = Menu.Item("HarassActive").GetValue<KeyBind>().Active;
             var ComboActive = Menu.Item("ComboActive").GetValue<KeyBind>().Active;
             var harassMana = Menu.Item("harassMana").GetValue<Slider>().Value;
+            var comboMana = Menu.Item("comboMana").GetValue<Slider>().Value;
 
             var forceQ = Menu.Item("forceQ").GetValue<KeyBind>().Active;
            
             var forceR = Menu.Item("forceR").GetValue<KeyBind>().Active;
+           
             if (ClearActive)
             {
                 Farm();
@@ -122,7 +123,7 @@ namespace Bard
             {
                 Harass(t);
             }
-            if (ComboActive)
+            if (ComboActive && comboMana < (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana))
             {
                 Combo(t);
             }
@@ -164,33 +165,10 @@ namespace Bard
         public static void Harass(Obj_AI_Hero t)
         {
             var HarassQ = Menu.Item("HarassQ").GetValue<bool>();
-            var HarassW = Menu.Item("HarassW").GetValue<bool>();
-            var HarassE = Menu.Item("HarassE").GetValue<bool>();
+            var alwaysStun = Menu.Item("alwaysStun").GetValue<bool>();
             t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
             if (HarassQ && Q.IsReady())
-            {
-                if (t.IsValidTarget())
-                {
-                   Q.Cast(t, true);
-                }
-            }
-        }
-
-        public static void Combo(Obj_AI_Hero t)
-        {
-
-            
-            var comboMana = Menu.Item("comboMana").GetValue<Slider>().Value;
-            var useR = Menu.Item("UseR").GetValue<bool>();
-            var useQ = Menu.Item("UseQ").GetValue<bool>();
-
-            var alwaysStun = Menu.Item("alwaysStun").GetValue<bool>();
-            var numOfEnemies = Menu.Item("MinEnemys").GetValue<Slider>().Value;
-            t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
-
-            
-            if (useQ && Q.IsReady())
             {
                 if (t.IsValidTarget())
                 {
@@ -198,7 +176,45 @@ namespace Bard
                     {
                         castStunQ(t);
                     }
+                    else
+                    {
+                        Q.Cast(t);
+                    }
                 }
+            }
+        }
+
+        public static void Combo(Obj_AI_Hero t)
+        {
+           
+            var useQ = Menu.Item("UseQ").GetValue<bool>();    
+            var useR = Menu.Item("UseR").GetValue<bool>();       
+            var alwaysStun = Menu.Item("alwaysStun").GetValue<bool>();
+            var numOfEnemies = Menu.Item("MinEnemys").GetValue<Slider>().Value;    
+            t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+
+            if (useQ && Q.IsReady())
+            {  
+                if (t.IsValidTarget())
+                {
+                    if (alwaysStun)
+                    {
+                        castStunQ(t);
+                    }
+                    else
+                    {
+                        Q.Cast(t);
+                    }
+                }
+            }
+            if (useR && R.IsReady())
+            {
+                var t2 = TargetSelector.GetTarget(2500, TargetSelector.DamageType.Magical);
+                if (GetEnemys(t2) >= numOfEnemies)
+                {
+                    R.Cast(t2, false, true);
+                }
+
             }
         }
 
@@ -217,12 +233,12 @@ namespace Bard
         }
 
         private static void BardOnInterruptableSpell(Obj_AI_Hero unit, Interrupter2.InterruptableTargetEventArgs args)
-         {
+        {
              if (Menu.Item("interruptR").GetValue<bool>())
              {
                 R.Cast(unit,false, true);
              }
-         }
+        }
 
         private static void OnDraw(EventArgs args)
         {
@@ -247,7 +263,7 @@ namespace Bard
 
             var checkPoint = prediction.UnitPosition + distanceFromTargetToWall;
 
-            if ((prediction.CollisionObjects.Count == 1 ) || prediction.UnitPosition.GetFirstWallPoint(checkPoint).HasValue)
+            if ((prediction.CollisionObjects.Count == 1) || prediction.UnitPosition.GetFirstWallPoint(checkPoint).HasValue)
             {
                 Q.Cast(prediction.UnitPosition);
             }
