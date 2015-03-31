@@ -63,7 +63,7 @@ namespace Bard
 
 
             Menu.AddSubMenu(new Menu("Clear", "Clear"));
-            Menu.SubMenu("Clear").AddItem(new MenuItem("UseQFarm", "Use Q").SetValue(true));
+            Menu.SubMenu("Clear").AddItem(new MenuItem("UseQFarm", "Use Q").SetValue(false));
             Menu.SubMenu("Clear").AddItem(new MenuItem("ClearActive", "Clear!").SetValue(new KeyBind("V".ToCharArray()[0], KeyBindType.Press)));
 
 
@@ -94,7 +94,7 @@ namespace Bard
             stunQ.SetSkillshot(Q.Delay, Q.Width, Q.Speed, true, SkillshotType.SkillshotLine);
 
 
-            Game.PrintChat("DesomondBard Loaded. fast");
+            Game.PrintChat("DesomondBard Loaded.");
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += OnDraw;
             Interrupter2.OnInterruptableTarget += BardOnInterruptableSpell;
@@ -260,9 +260,9 @@ namespace Bard
             var direction = (Player.ServerPosition - prediction.UnitPosition).Normalized();
             var endOfQ = (Q.Range)*direction;
 
-            var checkPoint = prediction.UnitPosition.Extend(Player.ServerPosition, -Q.Range/4);
+            var checkPoint = prediction.UnitPosition.Extend(Player.ServerPosition, -Q.Range/2);
 
-            if ((prediction.CollisionObjects.Count == 1) || (prediction.UnitPosition.GetFirstWallPoint(checkPoint).HasValue && (prediction.CollisionObjects.Count == 0)))
+            if ((prediction.UnitPosition.GetFirstWallPoint(checkPoint).HasValue) || (prediction.CollisionObjects.Count == 1))
             {
                 Q.Cast(prediction.UnitPosition);
             }
