@@ -37,6 +37,11 @@ namespace Bard
 
         public static void Game_Start(EventArgs args)
         {
+            Player = ObjectManager.Player;
+
+            if (Player.ChampionName != "Bard")
+                return;
+            
             Menu = new Menu("Bard", "Bard", true);
             var TargetSelectorMenu = new Menu("Target Selector", "Target Selector");
             TargetSelector.AddToMenu(TargetSelectorMenu);
@@ -82,9 +87,6 @@ namespace Bard
             Menu.AddToMainMenu();
 
 
-
-            Player = ObjectManager.Player;
-
             Q = new Spell(SpellSlot.Q, 950f);
             R = new Spell(SpellSlot.R, 2500f);
             stunQ = new Spell(SpellSlot.Q, Q.Range);
@@ -119,11 +121,11 @@ namespace Bard
             {
                 Farm();
             }
-            if (HarassActive && harassMana < (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana))
+            if (HarassActive && harassMana < ((ObjectManager.Player.Mana / ObjectManager.Player.MaxMana)*100))
             {
                 Harass(t);
             }
-            if (ComboActive && comboMana < (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana))
+            if (ComboActive && comboMana < ((ObjectManager.Player.Mana / ObjectManager.Player.MaxMana)*100))
             {
                 Combo(t);
             }
