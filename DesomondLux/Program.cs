@@ -30,7 +30,7 @@ namespace Lux
 
         public static void Main(string[] args)
         {
-            Game.OnGameStart += Game_Start;
+            Game.OnStart += Game_Start;
             if (Game.Mode == GameMode.Running)
             {
                 Game_Start(new EventArgs());
@@ -98,7 +98,7 @@ namespace Lux
             Game.PrintChat("Lux Loaded.");
 
             Drawing.OnDraw += OnDraw;
-            Game.OnGameUpdate += Game_OnUpdate;
+            Game.OnUpdate += Game_OnUpdate;
         }
 
         public static void Game_OnUpdate(EventArgs args)

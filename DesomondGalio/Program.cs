@@ -28,7 +28,7 @@ namespace DesomondGalio
         public static SpellSlot SumIgnite = ObjectManager.Player.GetSpellSlot("SummonerDot");
         public static void Main(string[] args)
         {
-            Game.OnGameStart += Game_Start;
+            Game.OnStart += Game_Start;
             if (Game.Mode == GameMode.Running)
             {
                 Game_Start(new EventArgs());
@@ -99,7 +99,7 @@ namespace DesomondGalio
             R.SetSkillshot(0.5f, 300, 0, false, SkillshotType.SkillshotCircle);
 
             Game.PrintChat("DesomondGalio Loaded.");
-            Game.OnGameUpdate += Game_OnUpdate;
+            Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += OnDraw;
         }
 

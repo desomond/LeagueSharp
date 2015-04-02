@@ -1,1 +1,2 @@
 C:\Users\desomond\Documents\Visual Studio 2013\Projects\garen\garen\bin\Release\garen.exe.config
+C:\Users\desomond\Documents\Visual Studio 2013\Projects\garen\garen\obj\Debug\garen.csprojResolveAssemblyReference.cache
